@@ -279,19 +279,21 @@ const Meals = () => {
           0
         );
 
-      // إرسال البيانات للـ AI
-      const response = await fetch(
-        "http://localhost:3001/api/chat",
-        {
-          method: "POST",
+// إرسال البيانات للـ AI
+const response = await fetch(
+`${import.meta.env.VITE_API_URL}/api/chat`,
+{
+method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
 
-          body: JSON.stringify({
-            message: `
+headers: {
+  "Content-Type": "application/json",
+},
+
+body: JSON.stringify({
+  message: `
+
+
 لقد أضفت هذه الوجبة الآن:
 
 اسم الوجبة: ${savedMeal.name}
@@ -305,28 +307,28 @@ const Meals = () => {
 وضح لي إذا كانت الوجبة مناسبة لهدفي.
 ولا تفترض أن كل السعرات أو البروتين المتبقي يجب تناوله في هذه الوجبة.
 `,
+userProfile: profile,
+meals: todayMeals,
 
-            userProfile: profile,
 
-            meals: todayMeals,
+  nutritionSummary: {
+    dailyCalories,
+    consumedCalories,
+    consumedProtein,
+    remainingCalories,
+    proteinTarget,
+    remainingProtein,
+  },
+}),
 
-            nutritionSummary: {
-              dailyCalories,
-              consumedCalories,
-              consumedProtein,
-              remainingCalories,
-              proteinTarget,
-              remainingProtein,
-            },
-          }),
-        }
-      );
 
-      if (!response.ok) {
-        throw new Error(
-          "حدث خطأ في الاتصال بالـ AI"
-        );
-      }
+}
+);
+
+if (!response.ok) {
+throw new Error("حدث خطأ في الاتصال بالـ AI");
+}
+
 
       const data =
         await response.json();

@@ -285,40 +285,38 @@ const AIAssistant = () => {
       // 6. إرسال البيانات للـ Backend
       // =====================================
 
-      const response = await fetch(
-        "http://localhost:3001/api/chat",
-        {
-          method: "POST",
+    const response = await fetch(
+`${import.meta.env.VITE_API_URL}/api/chat`,
+{
+method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
 
-          body: JSON.stringify({
-            message: userText,
+headers: {
+  "Content-Type": "application/json",
+},
 
-            userProfile: profile,
+body: JSON.stringify({
+  message: userText,
+  userProfile: profile,
+  meals,
+  nutritionSummary: {
+    dailyCalories,
+    consumedCalories,
+    consumedProtein,
+    remainingCalories,
+    proteinTarget,
+    remainingProtein,
+  },
+}),
 
-            meals,
 
-            nutritionSummary: {
-              dailyCalories,
-              consumedCalories,
-              consumedProtein,
-              remainingCalories,
-              proteinTarget,
-              remainingProtein,
-            },
-          }),
-        }
-      );
+}
+);
 
-      if (!response.ok) {
-        throw new Error(
-          "حدث خطأ في الاتصال بالسيرفر"
-        );
-      }
+if (!response.ok) {
+throw new Error("حدث خطأ في الاتصال بالسيرفر");
+}
+
 
       const data =
         await response.json();
@@ -339,11 +337,19 @@ const AIAssistant = () => {
         ...prev,
         aiMessage,
       ]);
-    } catch (error) {
-      console.error(
-        "AI Error:",
-        error
-      );
+    }
+    catch (error) {
+  console.error("AI Error:", error);
+
+  console.log(
+    "API URL:",
+    import.meta.env.VITE_API_URL
+  );
+
+  if (error instanceof Error) {
+    console.error("Error message:", error.message);
+  }
+
 
       const errorMessage: Message = {
         id: Date.now() + 1,
@@ -356,10 +362,12 @@ const AIAssistant = () => {
         ...prev,
         errorMessage,
       ]);
+
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <main className="ai-page">
